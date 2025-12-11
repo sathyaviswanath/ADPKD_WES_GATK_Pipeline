@@ -37,6 +37,59 @@ This will, Create Raw_Data/ and Outputs/ directories under the current folder.
 
 - Download GRCh38 chr4 and chr16 FASTA files, build chr4_chr16.fa and run the full GATK‑based variant discovery and ANNOVAR‑prep workflow into Outputs/.
 
+## 🛠️ Tool Explanations
+### 1. FastQC
+
+**Purpose:** Generates quality control reports for raw sequencing reads, assessing per-base quality, GC content, sequence duplication, and adapter contamination.
+
+- Essential first step to identify data issues before downstream analysis
+
+- Produces HTML reports with summary statistics and graphs​
+
+### 2. BWA (Burrows-Wheeler Aligner)
+
+**Purpose:** Aligns short sequencing reads to a reference genome using the BWA-MEM algorithm optimized for Illumina paired-end reads.
+
+- Handles mismatches, gaps, and complex mapping scenarios efficiently
+
+- Outputs SAM format with alignment coordinates and mapping quality scores​
+
+### 3. Samtools(Software Asset Management Tools)
+
+**Purpose:** Suite of utilities for manipulating SAM/BAM files and reference genomes.
+
+- Converts formats (SAM↔BAM), sorts alignments, indexes files for fast access
+
+- faidx creates random access indexes for FASTA files used in variant calling​
+
+### 4. Freebayes
+
+**Purpose:** Haplotype-based variant caller for discovering SNPs and indels from BAM alignments.
+
+- Population genetics model considers allele frequencies and mapping quality
+
+- Installed via Bioconda for compatibility with bioinformatics environments.
+
+### 5. BCFtools 
+
+**Purpose:** High-performance toolkit for manipulation and analysis of VCF/BCF variant files.
+
+- Filters variants by quality, depth, allele frequency (bcftools view -i 'QUAL>20')
+
+- Merges multiple VCFs, generates summaries, and performs statistical analysis
+
+- Essential for post-variant calling processing and quality control of Freebayes output
+
+### 6. Genome Analysis Tool Kit (GATK)
+
+**Purpose:** GATK is a suite of tools from the Broad Institute for high‑accuracy variant calling from NGS data, especially germline SNPs and indels. 
+
+In this pipeline it is used to:
+
+- Mark duplicate reads, recalibrate base quality scores, and ensure the BAM input to variant calling is clean and well‑calibrated.
+
+- Call variants with HaplotypeCaller and then filter them using quality metrics, producing high‑confidence SNPs/indels suitable for downstream ADPKD interpretation.
+
 ## 📁 Documentation
 
 Detailed documentation is provided in the [Documentation/ folder](Documentation/folder):
@@ -47,7 +100,7 @@ Detailed documentation is provided in the [Documentation/ folder](Documentation/
 
 2. See [Documentation/2.Pipeline.md](Documentation/2.Pipeline.md) for:
 
-- Tool specification table and Step‑by‑step pipeline description with all key commands, expected inputs/outputs at each stage.
+- Step‑by‑step pipeline description with all key commands, expected inputs/outputs at each stage and Tool Specification Table.
 
 3. See [Documentation/3.Troubleshooting.md](Documentation/3.Troubleshooting.md) for:
 
