@@ -1,5 +1,17 @@
 # ADPKD WES GATK Analysis Pipeline
-## 🌡️ Pipeline Overview
+## Autosomal Dominant Polycystic Kidney Disease (ADPKD)
+
+Autosomal Dominant Polycystic Kidney Disease (ADPKD) is the most common inherited kidney disease, causing numerous cysts to form in the kidneys and other organs leading to kidney enlargement, pain, hypertension, and eventual kidney failure in about half of patients by age 60.
+
+### 🧬 Genetic Basis
+
+- **ADPKD is primarily caused by mutations in two genes:** PKD1 (on chromosome 16, responsible for about 85% of cases) and PKD2 (on chromosome 4, responsible for most remaining cases). 
+
+- These genes encode proteins called polycystin 1 and polycystin 2, which are involved in regulating tubular epithelial cell function and ciliary signaling. 
+
+- Mutations disrupt normal cell differentiation and proliferation, leading to cyst formation and gradual loss of kidney function.
+
+## Pipeline Overview
 
 This pipeline analyzes Whole Exome Sequencing (WES) data for Autosomal Dominant Polycystic Kidney Disease (ADPKD) using sample SRR21384731, focusing on chromosomes 4 and 16 that harbor the PKD1 and PKD2 genes. It performs raw read quality control, adapter and quality trimming, targeted alignment to a combined chr4/chr16 GRCh38 reference, BAM processing, BQSR, variant calling, SNP hard‑filtering and ANNOVAR‑ready output generation.
 
