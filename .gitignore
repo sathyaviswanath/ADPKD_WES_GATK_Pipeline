@@ -1,0 +1,31 @@
+############################
+# Python
+############################
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+############################
+# VS Code
+############################
+.vscode/
+
+############################
+# Linux
+############################
+*.swp
+*.swo
+*~
+
+# VEP cache
+Resources/
+
+# Excel temporary files
+~$*.xlsx
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.log

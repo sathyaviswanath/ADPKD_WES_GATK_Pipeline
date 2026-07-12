@@ -1,0 +1,34 @@
+============================================================
+        ADPKD WES Candidate Variant Summary Report
+============================================================
+
+Total Final Candidate Variants : 7
+
+Gene Distribution
+-----------------
+PKD1       : 5
+PKD2       : 2
+
+Variant Consequences
+--------------------
+missense_variant          : 6
+stop_gained               : 1
+
+Impact Distribution
+-------------------
+MODERATE        : 6
+HIGH            : 1
+
+Interpretation Summary
+----------------------
+Common population variant; Low priority for further investigation      : 4
+High-impact loss-of-function variant; Strong Candidate Variant         : 1
+Rare missense variant predicted damaging; High-priority candidate      : 1
+Missense variant; Insufficient population frequency data               : 1
+
+Canonical Variants : 7
+MANE Transcripts   : 7
+
+============================================================
+End of Report
+============================================================
