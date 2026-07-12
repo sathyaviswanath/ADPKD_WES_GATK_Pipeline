@@ -1,173 +1,238 @@
-# ADPKD WES GATK Analysis Pipeline
-## Autosomal Dominant Polycystic Kidney Disease (ADPKD)
+# 🧬 ADPKD Whole Exome Sequencing (WES) Analysis Pipeline
 
-Autosomal Dominant Polycystic Kidney Disease (ADPKD) is the most common inherited kidney disease, causing numerous cysts to form in the kidneys and other organs leading to kidney enlargement, pain, hypertension, and eventual kidney failure in about half of patients by age 60.
+## 📖 Overview
 
-### 🧬 Genetic Basis
+This repository presents a reproducible **Whole Exome Sequencing (WES)** analysis pipeline developed to identify and prioritize clinically relevant variants associated with **Autosomal Dominant Polycystic Kidney Disease (ADPKD)**.
 
-- **ADPKD is primarily caused by mutations in two genes:** PKD1 (on chromosome 16, responsible for about 85% of cases) and PKD2 (on chromosome 4, responsible for most remaining cases). 
+The workflow performs quality control, read alignment, variant calling, functional annotation using **Ensembl VEP**, candidate variant prioritization, visualization, summary statistics generation, and automated clinical report generation.
 
-- These genes encode proteins called polycystin 1 and polycystin 2, which are involved in regulating tubular epithelial cell function and ciliary signaling. 
+---
 
-- Mutations disrupt normal cell differentiation and proliferation, leading to cyst formation and gradual loss of kidney function.
+# 🩺 Autosomal Dominant Polycystic Kidney Disease (ADPKD)
 
-## Pipeline Overview
+Autosomal Dominant Polycystic Kidney Disease (ADPKD) is the **most common inherited kidney disease**, characterized by the progressive formation of numerous fluid-filled cysts in the kidneys and, occasionally, other organs. As cysts enlarge over time, they can lead to kidney enlargement, chronic pain, hypertension, reduced kidney function, and ultimately **kidney failure**, affecting nearly **50% of patients by the age of 60 years**.
 
-This pipeline analyzes Whole Exome Sequencing (WES) data for Autosomal Dominant Polycystic Kidney Disease (ADPKD) using sample SRR21384731, focusing on chromosomes 4 and 16 that harbor the PKD1 and PKD2 genes. It performs raw read quality control, adapter and quality trimming, targeted alignment to a combined chr4/chr16 GRCh38 reference, BAM processing, BQSR, variant calling, SNP hard‑filtering and ANNOVAR‑ready output generation.
+---
 
-**Pipeline Workflow Summary:**
+# 🧬 Genetic Basis
 
-FASTQ → FastQC → FastP → BWA‑MEM → GATK (MarkDuplicates + BQSR + HaplotypeCaller) → VariantFiltration → ANNOVAR input.
+ADPKD is primarily caused by pathogenic variants in two genes:
 
-## 🚀 Quick Start
-### 1. Clone & Setup Environment
+- **PKD1** (Chromosome 16) – responsible for approximately **85%** of cases.
+- **PKD2** (Chromosome 4) – responsible for most of the remaining cases.
 
-    git clone https://github.com/sathyaviswanath/ADPKD_WES_GATK_Pipeline.git
-    cd ADPKD_WES_GATK_Pipeline
+These genes encode the proteins **Polycystin-1 (PC1)** and **Polycystin-2 (PC2)**, which regulate tubular epithelial cell function, calcium signaling, and primary cilia-mediated signaling pathways.
 
-    chmod +x run_pipeline.sh
+Mutations in these genes disrupt normal cellular signaling, resulting in abnormal cell proliferation, cyst formation, and the gradual decline of kidney function.
 
-Install core tools (if not already installed) and ensure Docker is available:
+---
 
+# 🎯 Project Objectives
 
-    sudo apt update && sudo apt upgrade -y
-    sudo apt -y install fastqc fastp bwa samtools bcftools vcftools docker.io
-    sudo docker pull broadinstitute/gatk:latest
-    sudo docker pull bioinfochrustrasbourg/annovar:latest
+- Perform quality assessment of WES data.
+- Align sequencing reads to the **GRCh38** reference genome.
+- Identify high-confidence germline variants using **GATK Best Practices**.
+- Functionally annotate variants using **Ensembl VEP**.
+- Prioritize clinically relevant variants in **PKD1** and **PKD2**.
+- Generate publication-ready visualizations.
+- Produce automated summary and clinical reports.
 
-The pipeline script also attempts to install the main utilities and pull the GATK image during execution.
+---
 
-### 2. Download Data & Run Pipeline
+# 📂 Project Information
 
-All downloads and processing are handled by run_pipeline.sh:
+**Sample ID**
 
-    ./run_pipeline.sh
+SRR21384731
 
-This will, Create Raw_Data/ and Outputs/ directories under the current folder.
+**Reference Genome**
 
-- Download paired‑end FASTQ files for SRR21384731 from ENA into Raw_Data/.
+GRCh38
 
-- Download GRCh38 chr4 and chr16 FASTA files, build chr4_chr16.fa and run the full GATK‑based variant discovery and ANNOVAR‑prep workflow into Outputs/.
+**Genes of Interest**
 
-## 🛠️ Tool Explanations
-### 1. FastQC
+- PKD1
+- PKD2
 
-**Purpose:** Generates quality control reports for raw sequencing reads, assessing per-base quality, GC content, sequence duplication, and adapter contamination.
+---
 
-- Essential first step to identify data issues before downstream analysis
+# ⚙️ Pipeline Workflow
 
-- Produces HTML reports with summary statistics and graphs​
+```
+FASTQ
+   │
+FastQC
+   │
+FastP
+   │
+BWA-MEM
+   │
+SAMtools
+   │
+GATK
+   │
+Analysis-ready SNP VCF
+   │
+Ensembl VEP Annotation
+   │
+Python Variant Prioritization
+   │
+Summary Report
+   │
+Visualization
+   │
+Clinical Report
+```
 
-### 2. BWA (Burrows-Wheeler Aligner)
+---
 
-**Purpose:** Aligns short sequencing reads to a reference genome using the BWA-MEM algorithm optimized for Illumina paired-end reads.
+# 🚀 Features
 
-- Handles mismatches, gaps, and complex mapping scenarios efficiently
+- ✅ FastQC quality assessment
+- ✅ Adapter trimming using FastP
+- ✅ Read alignment using BWA-MEM
+- ✅ BAM processing using SAMtools
+- ✅ Variant calling using GATK HaplotypeCaller
+- ✅ Functional annotation using Ensembl VEP
+- ✅ PKD1 and PKD2 candidate variant prioritization
+- ✅ Canonical and MANE transcript selection
+- ✅ Automated variant interpretation
+- ✅ Summary statistics generation
+- ✅ Publication-quality visualizations
+- ✅ Automated clinical report generation
 
-- Outputs SAM format with alignment coordinates and mapping quality scores​
+---
 
-### 3. Samtools(Software Asset Management Tools)
+# 🔬 Downstream Analysis Strategy
 
-**Purpose:** Suite of utilities for manipulating SAM/BAM files and reference genomes.
+Although **GATK** identifies both **Single Nucleotide Polymorphisms (SNPs)** and **small insertions/deletions (Indels)**, this project focuses on **SNP prioritization** during downstream analysis.
 
-- Converts formats (SAM↔BAM), sorts alignments, indexes files for fast access
+### Why only SNPs?
 
-- faidx creates random access indexes for FASTA files used in variant calling​
+- SNPs constitute the majority of high-confidence germline variants detected in Whole Exome Sequencing.
+- Most well-characterized pathogenic ADPKD variants reported in **PKD1** and **PKD2** are SNPs.
+- Indels often require additional validation because repetitive genomic regions, particularly within **PKD1**, can introduce alignment and variant-calling artifacts.
+- Restricting downstream analysis to SNPs provides a robust, reproducible, and clinically interpretable demonstration of the variant prioritization workflow.
 
-### 4. Freebayes
+Future versions of this pipeline can be extended to include comprehensive **Indel prioritization**.
 
-**Purpose:** Haplotype-based variant caller for discovering SNPs and indels from BAM alignments.
+---
 
-- Population genetics model considers allele frequencies and mapping quality
+# 📊 Final Results
 
-- Installed via Bioconda for compatibility with bioinformatics environments.
+| Metric | Count |
+|---------|------:|
+| Total Variants Detected | **154,192** |
+| PKD Gene Variants | **642** |
+| Candidate Variants | **44** |
+| Canonical Candidate Variants | **7** |
+| High-Priority Candidate Variants | **2** |
 
-### 5. BCFtools 
+---
 
-**Purpose:** High-performance toolkit for manipulation and analysis of VCF/BCF variant files.
+# 📁 Repository Structure
 
-- Filters variants by quality, depth, allele frequency (bcftools view -i 'QUAL>20')
+```
+ADPKD_WES_GATK_Pipeline/
 
-- Merges multiple VCFs, generates summaries, and performs statistical analysis
+├── Annotation/
+│   ├── Final_Candidate_Variants.xlsx
+│   ├── Summary_Report.txt
+│   ├── Clinical_Report.txt
+│   └── ...
+│
+├── Documentation/
+│   ├── 1.Pipeline_Overview.md
+│   ├── 2.Pipeline.md
+│   └── 3.Troubleshooting.md
+│
+├── Figures/
+│   ├── Figure1_Interpretation_Distribution.png
+│   ├── Figure2_Consequence_Distribution.png
+│   ├── Figure3_Impact_Distribution.png
+│   ├── Figure4_Canonical_Transcript_Distribution.png
+│   └── Figure5_PKD1_vs_PKD2_PieChart.png
+│
+├── Outputs/
+│
+├── Script/
+│   ├── run_pipeline.sh
+│   ├── final_candidate_variants.py
+│   ├── summary_report.py
+│   ├── visualization.py
+│   └── clinical_report.py
+│
+├── requirements.txt
+└── README.md
+```
 
-- Essential for post-variant calling processing and quality control of Freebayes output
+---
 
-### 6. Genome Analysis Tool Kit (GATK)
+---
 
-**Purpose:** GATK is a suite of tools from the Broad Institute for high‑accuracy variant calling from NGS data, especially germline SNPs and indels. 
+# ▶️ Running the Pipeline
 
-In this pipeline it is used to:
+Clone the repository:
 
-- Mark duplicate reads, recalibrate base quality scores, and ensure the BAM input to variant calling is clean and well‑calibrated.
+```bash
+git clone https://github.com/sathyaviswanath/ADPKD_WES_GATK_Pipeline.git
 
-- Call variants with HaplotypeCaller and then filter them using quality metrics, producing high‑confidence SNPs/indels suitable for downstream ADPKD interpretation.
+cd ADPKD_WES_GATK_Pipeline
+```
 
-## 📁 Documentation
+Make the pipeline executable:
 
-Detailed documentation is provided in the [Documentation/ folder](Documentation/folder):
+```bash
+chmod +x Script/run_pipeline.sh
+```
 
-1. See [Documentation/1.Pipeline_Overview.md](Documentation/1.Pipeline_Overview.md) for:
+Run the complete workflow:
 
-- Scientific context for ADPKD, description of raw data and chr4/chr16 reference, analysis goals, and high‑level workflow summary.
+```bash
+bash Script/run_pipeline.sh
+```
 
-2. See [Documentation/2.Pipeline.md](Documentation/2.Pipeline.md) for:
+---
 
-- Step‑by‑step pipeline description with all key commands, expected inputs/outputs at each stage and Tool Specification Table.
+# 📄 Generated Outputs
 
-3. See [Documentation/3.Troubleshooting.md](Documentation/3.Troubleshooting.md) for:
+The pipeline automatically generates:
 
-- Common issues (e.g., storage limits in Codespaces, Docker failures) and strategies to solve it.
+- 📄 Analysis-ready SNP VCF
+- 📄 VEP annotated variant file
+- 📊 Final candidate variant table
+- 📈 Summary statistics report
+- 🏥 Clinical report
+- 📉 Publication-quality figures
 
-## 📊 Key Outputs
-All important results are written to Outputs/:
+---
 
-1. QC Reports
-2. Alignment / BAM Files
-3. Variant Files
-4. Annotation Files
-5. **Outputs/humandb/hg38_refGene*.gz:** hg38 refGene annotation databases used for functional annotation.
+# 🔮 Future Improvements
 
-## ⚙️ Customization
-To run this pipeline on a different sample or modify behavior:
+- ACMG/AMP automated variant classification
+- Comprehensive Indel prioritization
+- ClinVar pathogenicity integration
+- Multi-sample cohort analysis
+- Interactive HTML reports
+- Workflow automation using Snakemake or Nextflow
 
-- Edit the variable block near the top of run_pipeline.sh:
+---
 
-- Change SAMPLE_ID and SRA path if using another sample.
+# 🙏 Acknowledgements
 
-- Point reference URLs to different assemblies if needed.
+This project utilizes the following open-source tools:
 
-For whole‑genome or other‑region analysis:
+- GATK
+- Ensembl VEP
+- FastQC
+- FastP
+- BWA-MEM
+- SAMtools
+- Python (Pandas, Matplotlib, OpenPyXL)
 
-- Replace the chr4/chr16 FASTA URLs with full‑genome GRCh38 FASTA.
+---
 
-- Remove or adjust the bcftools view -r chr4,chr16 step for known sites.
+# 📜 Author
 
-## 📚 References
-### Data Sources Used in This Pipeline
-
-- **Raw WES sample (SRR21384731)**  
-  
-  Paired‑end FASTQ files downloaded from the European Nucleotide Archive / SRA:
-
-  https://www.ebi.ac.uk/ena/browser/view/SRR21384731
-
-- **GRCh38 Reference Genome (chr4 and chr16)**  
-
-  Chromosome‑level FASTA files from NCBI GRCh38.p14 assembly:  
-
-  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/chr4.fna.gz
-  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_structure/Primary_Assembly/assembled_chromosomes/FASTA/chr16.fna.gz
-
-- **dbSNP Known Sites (hg38)**  
-  
-  dbSNP v138 VCF used for base quality score recalibration:  
-  
-  https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz
-
-- **ANNOVAR hg38 refGene Databases**  
-  
-  Annotation databases downloaded by the pipeline:  
-  
-   http://www.openbioinformatics.org/annovar/download/hg38_refGene.txt.gz
-   http://www.openbioinformatics.org/annovar/download/hg38_refGeneMrna.fa.gz
-   http://www.openbioinformatics.org/annovar/download/hg38_refGeneVersion.txt.gz
+**Sathya**
+*Bioinformatics Analyst*

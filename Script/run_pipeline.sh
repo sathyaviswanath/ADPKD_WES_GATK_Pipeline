@@ -1,17 +1,46 @@
 #!/usr/bin/env bash
 
+###############################################################################
+# ADPKD Whole Exome Sequencing Pipeline
+# Sample: SRR21384731
+# Reference Genome: GRCh38
+###############################################################################
+
 set -euo pipefail
 
 echo "ADPKD WES GATK Pipeline..."
 
 echo "Setting up environment..."
+conda create -n adpkd_wes python=3.12 -y
+conda activate adpkd_wes
+conda install -c bioconda fastqc -y
+conda install -c bioconda fastp -y
+conda install -c bioconda bwa -y
+conda install -c bioconda samtools -y
+pip install -r requirements.txt
 sudo apt update
-sudo apt upgrade -y
-sudo apt -y install fastqc fastp bwa samtools bcftools vcftools
+sudo apt upgrade -y  
 sudo docker pull "broadinstitute/gatk:latest"
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+docker pull ensemblorg/ensembl-vep
+
+echo Download VEP Cache (One-time Setup)
+mkdir -p Resources/VEP
+
+docker run --rm \
+-u root \
+-v $PWD/Resources/VEP:/data \
+ensemblorg/ensembl-vep \
+perl /opt/vep/src/ensembl-vep/INSTALL.pl \
+-a cf \
+-s homo_sapiens \
+-y GRCh38 \
+-c /data
 
 echo "Creating directories and Data Download..."
-mkdir -p "Raw_Data" "Outputs"
+mkdir -p "Raw_Data" "Outputs" "Annotation" "Figures" "Report"
 cd "Raw_Data"
 wget -nc "ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR213/031/SRR21384731/SRR21384731_1.fastq.gz"
 wget -nc "ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR213/031/SRR21384731/SRR21384731_2.fastq.gz"
@@ -136,17 +165,45 @@ sudo docker run --rm -v "$PWD":/data "broadinstitute/gatk:latest" \
   -V /data/SRR21384731_filtered_snps.vcf \
   -O /data/SRR21384731_analysis_ready_snps.vcf
 
-echo "Converting VCF to ANNOVAR format..."
-sudo docker run -it --rm -v "$PWD":/data "bioinfochrustrasbourg/annovar:latest" \
-  perl ./convert2annovar.pl \
-  -format vcf4 /data/SRR21384731_filtered_snps.vcf \
-  -outfile /data/SRR21384731_filtered_snps.avinput
+echo "Running Ensembl VEP..."
 
-echo "Downloading ANNOVAR reference files..."
-mkdir -p "humandb"
-cd "humandb"
-wget http://www.openbioinformatics.org/annovar/download/hg38_refGene.txt.gz
-wget http://www.openbioinformatics.org/annovar/download/hg38_refGeneMrna.fa.gz
-wget http://www.openbioinformatics.org/annovar/download/hg38_refGeneVersion.txt.gz
+docker run --rm \
+-v $PWD:/data \
+-v $PWD/Resources/VEP:/opt/vep/.vep \
+ensemblorg/ensembl-vep \
+vep \
+-i /data/Outputs/SRR21384731_analysis_ready_snps.vcf \
+-o /data/Annotation/SRR21384731_filtered_snps_annotated.txt \
+--cache \
+--offline \
+--assembly GRCh38 \
+--everything
 
-echo "ADPKD WES GATK Pipeline Completed Successfully!"
+echo "Generating Final Candidate Variants..."
+
+python Script/final_candidate_variants.py
+
+echo "Generating Summary Report..."
+
+python Script/summary_report.py
+
+echo "Generating Figures..."
+
+python Script/visualization.py
+
+echo "Generating Clinical Report..."
+
+python Script/clinical_report.py
+
+
+echo "======================================================"
+echo "ADPKD Pipeline Completed Successfully"
+echo "======================================================"
+
+echo "Generated Files"
+
+echo "- Annotation/Final_Candidate_Variants.xlsx"
+echo "- Annotation/Summary_Report.txt"
+echo "- Annotation/Clinical_Report.txt"
+echo "- Figures/"
+
